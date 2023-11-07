@@ -3,8 +3,10 @@ package controller
 import (
 	"fiber/database"
 	"fiber/model/entity"
-	"fiber/model/entity/request"
+	"fiber/model/request"
 	"log"
+
+	"github.com/go-playground/validator/v10"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,29 +29,44 @@ func GetAllHandler(ctx *fiber.Ctx) error  {
 	
 	
 }
-func CreateUser (ctx *fiber.Ctx) error{
-	
-	user := new(request.User)
 
-	if err:= ctx.BodyParser(user); err != nil {
-		log.Println(err)
-		
+
+func UserHandlerCreate(ctx *fiber.Ctx) error {
+	user := new(request.UserCreateRequest)
+
+	if err := ctx.BodyParser(user); err != nil{
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Cannot parse JSON",
+			"error": err,
+		})
 	}
-	NewUser := entity.User{
-		Name : user.Name,
-		Email : user.Email,
+	validate := validator.New()
+	
+	
+	errvalid := validate.Struct(user)
+	if errvalid != nil {
+
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errvalid.Error(),
+		})
+}
+
+	newUser := entity.User{
+		Name: user.Name,
+		Email: user.Email,
 		Address: user.Address,
 		Phone: user.Phone,
 	}
 
-	errCreateuser := database.DB.Create(&NewUser).Error
+	errCreateuser := database.DB.Create(&newUser).Error
 	if errCreateuser != nil {
-		return ctx.Status(500).JSON(fiber.Map{
-			"message": "Create user failed",
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot create user",
+			"error": errCreateuser,
 	})
-	
 }
-return ctx.Status(200).JSON(fiber.Map{
-	"message": "Create user success",})
-
+return ctx.JSON(fiber.Map{
+	"massaged": "successful",
+	"user": newUser,
+})
 }

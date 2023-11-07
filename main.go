@@ -19,6 +19,7 @@ func main() {
     route.RouteInit(app)
 
     route.UserGetAll(app)
+    route.UserPost(app)
 
     
 

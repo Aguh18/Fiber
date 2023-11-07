@@ -16,5 +16,5 @@ func  UserGetAll(r *fiber.App)  {
 }
 
 func  UserPost(r *fiber.App)  {
-	r.Post("/user", controller.CreateUser)
+	r.Post("/user", controller.UserHandlerCreate)
 }
