@@ -18,6 +18,8 @@ func main() {
     // route
     route.RouteInit(app)
 
+    route.UserGetAll(app)
+
     
 
     app.Listen(":8080")

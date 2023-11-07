@@ -8,5 +8,13 @@ import (
 
 func RouteInit(r *fiber.App) {
 
-	r.Get("/user", controller.UserControllerRead)
+	r.Get("/", controller.UserControllerRead)
+}
+
+func  UserGetAll(r *fiber.App)  {
+	r.Get("/user", controller.GetAllHandler)
+}
+
+func  UserPost(r *fiber.App)  {
+	r.Post("/user", controller.CreateUser)
 }

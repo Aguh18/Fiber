@@ -13,7 +13,7 @@ func Migration()  {
 
 	err := database.DB.AutoMigrate(&entity.User{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	fmt.Println("Migration has been processed")
 	
