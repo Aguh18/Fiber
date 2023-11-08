@@ -18,7 +18,7 @@ func UserControllerRead(ctx *fiber.Ctx) error {
 	})
 	
 }
-func GetAllHandler(ctx *fiber.Ctx) error  {
+func UserHandlerGetAll(ctx *fiber.Ctx) error  {
 	var users []entity.User
 
 	err :=  database.DB.Find(&users).Error
@@ -73,7 +73,7 @@ return ctx.JSON(fiber.Map{
 }
 
 
-func GetUserHandlerById(ctx *fiber.Ctx) error {
+func UserHandlerGetById(ctx *fiber.Ctx) error {
 	userId := ctx.Params("id")
 	
 	var user entity.User
@@ -102,4 +102,51 @@ func GetUserHandlerById(ctx *fiber.Ctx) error {
 	})
 
 
+}
+
+
+func UserHandlerUpdateByid(ctx *fiber.Ctx) error {
+	userUpdate := new(request.UserUpdateRequest)
+
+	if err := ctx.BodyParser(userUpdate); err != nil{
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Cannot parse JSON",
+			"error": err,
+		})
+	}
+
+	var user entity.User
+	userId := ctx.Params("id")
+	// cek availabel
+	err := database.DB.First(&user, "id =?",userId).Error
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot find user",
+			"error": err,
+		})
+		
+	}
+
+	// update user
+	if userUpdate.Name != "" {
+		user.Name = userUpdate.Name
+	}
+	user.Address = userUpdate.Address
+	user.Phone = userUpdate.Phone
+	user.Email = userUpdate.Email
+
+	err = database.DB.Save(&user).Error
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot update user",
+			"error": err,
+		})
+	}
+
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "success",
+		"updateUser": user,
+
+})
 }

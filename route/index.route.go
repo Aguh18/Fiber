@@ -12,7 +12,7 @@ func RouteInit(r *fiber.App) {
 }
 
 func  UserGetAll(r *fiber.App)  {
-	r.Get("/user", controller.GetAllHandler)
+	r.Get("/user", controller.UserHandlerGetAll)
 }
 
 func  UserPost(r *fiber.App)  {
@@ -20,6 +20,11 @@ func  UserPost(r *fiber.App)  {
 }
 
 func UserGetByid(r *fiber.App)  {
-	r.Get("/user/:id", controller.GetUserHandlerById)
+	r.Get("/user/:id", controller.UserHandlerGetById)
+	
+}
+
+func UserUpdateById(r *fiber.App) {
+	r.Put("/user/:id", controller.UserHandlerUpdateByid)  
 	
 }
