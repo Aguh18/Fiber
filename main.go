@@ -20,6 +20,7 @@ func main() {
 
     route.UserGetAll(app)
     route.UserPost(app)
+    route.UserGetByid(app)
 
     
 

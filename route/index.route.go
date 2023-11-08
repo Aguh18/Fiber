@@ -18,3 +18,8 @@ func  UserGetAll(r *fiber.App)  {
 func  UserPost(r *fiber.App)  {
 	r.Post("/user", controller.UserHandlerCreate)
 }
+
+func UserGetByid(r *fiber.App)  {
+	r.Get("/user/:id", controller.GetUserHandlerById)
+	
+}
