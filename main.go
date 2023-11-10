@@ -18,11 +18,7 @@ func main() {
     // route
     route.RouteInit(app)
 
-    route.UserGetAll(app)
-    route.UserPost(app)
-    route.UserGetByid(app)
-    route.UserUpdateById(app)
-
+    
     
 
     app.Listen(":8080")

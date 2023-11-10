@@ -9,22 +9,12 @@ import (
 func RouteInit(r *fiber.App) {
 
 	r.Get("/", controller.UserControllerRead)
-}
-
-func  UserGetAll(r *fiber.App)  {
 	r.Get("/user", controller.UserHandlerGetAll)
-}
-
-func  UserPost(r *fiber.App)  {
-	r.Post("/user", controller.UserHandlerCreate)
-}
-
-func UserGetByid(r *fiber.App)  {
 	r.Get("/user/:id", controller.UserHandlerGetById)
-	
-}
-
-func UserUpdateById(r *fiber.App) {
+	r.Post("/user", controller.UserHandlerCreate)
 	r.Put("/user/:id", controller.UserHandlerUpdateByid)  
-	
+	r.Put("/user/:id/update-email", controller.UserHandlerUpdateEmailByid)  
+	r.Delete("/user/:id", controller.UserHandlerDeleteByid)
+
+
 }

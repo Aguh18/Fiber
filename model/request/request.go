@@ -19,3 +19,10 @@ type UserUpdateRequest  struct {
 	Phone     string `json:"phone" `
 
 }
+
+
+type UserEmailUpdate  struct {
+	
+	Email     string `json:"email" `
+
+}
