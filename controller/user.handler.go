@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fiber/database"
-	"fiber/model/entity"
-	"fiber/model/request"
-	"fiber/model/response"
+	"fiber/models/entity"
+	"fiber/models/request"
+	"fiber/models/response"
+	"fiber/utils"
 	"log"
 
 	"github.com/go-playground/validator/v10"
@@ -20,6 +21,8 @@ func UserControllerRead(ctx *fiber.Ctx) error {
 }
 func UserHandlerGetAll(ctx *fiber.Ctx) error {
 	var users []entity.User
+	userInfo := ctx.Locals("user")
+	log.Println("User adalah", userInfo)
 
 	err := database.DB.Find(&users).Error
 
@@ -52,11 +55,21 @@ func UserHandlerCreate(ctx *fiber.Ctx) error {
 		})
 	}
 
+	hashedPassword, err := utils.HasingPassword(user.Password)
+	if err != nil {
+		log.Println(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot hash password",
+			"error":   err,
+		})
+	}
+
 	newUser := entity.User{
-		Name:    user.Name,
-		Email:   user.Email,
-		Address: user.Address,
-		Phone:   user.Phone,
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: hashedPassword,
+		Address:  user.Address,
+		Phone:    user.Phone,
 	}
 
 	errCreateuser := database.DB.Create(&newUser).Error
@@ -172,13 +185,10 @@ func UserHandlerUpdateEmailByid(ctx *fiber.Ctx) error {
 	if emailUpdate.Email != "" {
 		user.Email = emailUpdate.Email
 	}
-	
 
-	if err:= database.DB.First(&IsEmail, "email=?", emailUpdate.Email).Error ; err == nil {
+	if err := database.DB.First(&IsEmail, "email=?", emailUpdate.Email).Error; err == nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Email aready used",
-			
-			
 		})
 	}
 
@@ -200,31 +210,27 @@ func UserHandlerUpdateEmailByid(ctx *fiber.Ctx) error {
 	})
 }
 
-
-
 func UserHandlerDeleteByid(ctx *fiber.Ctx) error {
 
 	UserID := ctx.Params("id")
 	var user entity.User
 
-
-	if err := database.DB.Debug().First(&user, "id=?",UserID).Error; err != nil{
+	if err := database.DB.Debug().First(&user, "id=?", UserID).Error; err != nil {
 		return ctx.Status(404).JSON(fiber.Map{
 			"message": "User not found",
-			"error": err,
+			"error":   err,
 		})
 	}
 
-	err:= database.DB.Debug().Delete(&user).Error
+	err := database.DB.Debug().Delete(&user).Error
 	if err != nil {
 		return ctx.Status(500).JSON(fiber.Map{
 			"message": "Cannot delete user",
 			"error":   err.Error(),
 		})
-}
+	}
 
-
-return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-	"message": "success deleted",
-})
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "success deleted",
+	})
 }

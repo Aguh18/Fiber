@@ -3,19 +3,17 @@ package migration
 import (
 	
 	"fiber/database"
-	"fiber/model/entity"
+	"fiber/models/entity"
 	
-	"fmt"
+	
 	"log"
 )
 
 func Migration()  {
 
-	err := database.DB.AutoMigrate(&entity.User{})
+	err := database.DB.AutoMigrate(&entity.User{}, entity.Book{})
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Migration has been processed")
-	
 	
 }
