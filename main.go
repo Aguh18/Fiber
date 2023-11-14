@@ -9,17 +9,14 @@ import (
 )
 
 func main() {
-    // init fiber
-    app := fiber.New()
-    // Init database
-    database.DatabaseInit()
-    migration.Migration()
+	// init fiber
+	app := fiber.New()
+	// Init database
+	database.DatabaseInit()
+	migration.Migration()
 
-    // route
-    route.RouteInit(app)
+	// route
+	route.RouteInit(app)
 
-    
-    
-
-    app.Listen(":8080")
+	app.Listen(":8080")
 }

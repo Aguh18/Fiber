@@ -3,8 +3,7 @@ package controller
 import (
 	"fiber/models/entity"
 	"fiber/models/request"
-	"fmt"
-	"log"
+	
 
 	"fiber/database"
 
@@ -32,31 +31,19 @@ func BookHandlerCreate(ctx *fiber.Ctx) error {
 		})
 	}
 
-	file, err := ctx.FormFile("cover")
-	if err != nil {
-		log.Println("error:", err)
+
+	filename := ctx.Locals("filename")
+	if filename == nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "image is required",
+		})
 	}
-
-	var filename string
-	if file != nil {
-		filename = file.Filename
-
-		errsave := ctx.SaveFile(file, fmt.Sprintf("./public/images/%s", filename))
-	if errsave != nil {
-		log.Println("error:", errsave)
-	}
-
-	} else{
-		log.Println("error:", "Nothing file to updload")
-	}
-
-
 	
 	newbook := entity.Book{
 		Title:       book.Title,
 		Author:      book.Author,
 		Description: book.Description,
-		Cover:       filename,
+		Cover:       filename.(string),
 	}
 
 	errCreatebook := database.DB.Create(&newbook).Error

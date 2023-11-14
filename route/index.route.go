@@ -3,6 +3,7 @@ package route
 import (
 	"fiber/controller"
 	"fiber/middleware"
+	"fiber/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,7 +29,7 @@ func RouteInit(r *fiber.App) {
 
 
 	// book
-	r.Post("/book", controller.BookHandlerCreate)
+	r.Post("/book", utils.HandleSingleRequest ,controller.BookHandlerCreate)
 
 
 }
