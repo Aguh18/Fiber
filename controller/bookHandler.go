@@ -36,16 +36,27 @@ func BookHandlerCreate(ctx *fiber.Ctx) error {
 	if err != nil {
 		log.Println("error:", err)
 	}
-	errsave := ctx.SaveFile(file, fmt.Sprintf("public/images/%s", file.Filename))
+
+	var filename string
+	if file != nil {
+		filename = file.Filename
+
+		errsave := ctx.SaveFile(file, fmt.Sprintf("./public/images/%s", filename))
 	if errsave != nil {
 		log.Println("error:", errsave)
 	}
 
+	} else{
+		log.Println("error:", "Nothing file to updload")
+	}
+
+
+	
 	newbook := entity.Book{
 		Title:       book.Title,
 		Author:      book.Author,
 		Description: book.Description,
-		Cover:       file.Filename,
+		Cover:       filename,
 	}
 
 	errCreatebook := database.DB.Create(&newbook).Error
