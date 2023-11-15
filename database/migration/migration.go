@@ -10,7 +10,7 @@ import (
 
 func Migration()  {
 
-	err := database.DB.AutoMigrate(&entity.User{}, entity.Book{})
+	err := database.DB.AutoMigrate(&entity.User{}, entity.Book{}, entity.Category{}, entity.Photo{})
 	if err != nil {
 		log.Println(err)
 		fmt.Print("Error migrate database")
