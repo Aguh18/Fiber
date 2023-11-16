@@ -45,6 +45,8 @@ func HandleMultipleRequest(ctx *fiber.Ctx) error {
 
 	if errform != nil {
 		log.Println("error:", errform)
+
+		
 	}
 
 	files := form.File["photos"]

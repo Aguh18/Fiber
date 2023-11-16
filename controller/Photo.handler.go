@@ -6,6 +6,8 @@ import (
 	"fiber/database"
 	"fiber/models/entity"
 	"fiber/models/request"
+	"fiber/utils"
+
 	// "fmt"
 	// "log"
 
@@ -40,7 +42,7 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "image is required",
 		})
-	}else{
+	} else {
 		// log.Print("ini dijalankan")
 		// filenamestring = fmt.Sprintf("%v", filenames)
 		filenamedata := filenames.([]string)
@@ -51,22 +53,54 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 			}
 
 			errcreatePhoto := database.DB.Create(&newphoto).Error
-	if errcreatePhoto != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Cannot create book",
-			"error":   errcreatePhoto,
-		})
-	}
+			if errcreatePhoto != nil {
+				return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Cannot create book",
+					"error":   errcreatePhoto,
+				})
+			}
 		}
-		
+
 	}
-	
 
-
-	
 	return ctx.JSON(fiber.Map{
 		"massage": "successful",
-		
+	})
+
+}
+
+func PhotoHandlerDeleteById(ctx *fiber.Ctx) error {
+	Photoid := ctx.Params("id")
+
+	var photo entity.Photo
+
+	err := database.DB.Debug().First(&photo, "id = ?", Photoid).Error
+	if err != nil {
+		ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Photo not found",
+			"error":   err,
+		})
+	}
+
+	// Remove file Handler
+	errdeletefile := utils.HandleRemoveFile(photo.Image)
+	if errdeletefile != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot delete file",
+			"error":   errdeletefile,
+		})}
+
+	errDelete := database.DB.Delete(&photo).Error
+	if errDelete != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot delete photo",
+			"error":   errDelete,
+		})
+
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "Data succes delete",
 	})
 
 }
