@@ -3,9 +3,11 @@ package controller
 import (
 	// "fiber/database"
 	// "fiber/models/entity"
+	"fiber/database"
+	"fiber/models/entity"
 	"fiber/models/request"
-	"fmt"
-	"log"
+	// "fmt"
+	// "log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -30,7 +32,7 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 			"message": errvalid.Error(),
 		})
 	}
-	var filenamestring string
+	// var filenamestring string
 
 	// validation reuquired image
 	filenames := ctx.Locals("filenames")
@@ -39,24 +41,29 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 			"message": "image is required",
 		})
 	}else{
-		log.Print("ini dijalankan")
-		filenamestring = fmt.Sprintf("%v", filenames)
+		// log.Print("ini dijalankan")
+		// filenamestring = fmt.Sprintf("%v", filenames)
+		filenamedata := filenames.([]string)
+		for _, filename := range filenamedata {
+			newphoto := entity.Photo{
+				Image:      filename,
+				CategoryID: photo.CategotyId,
+			}
+
+			errcreatePhoto := database.DB.Create(&newphoto).Error
+	if errcreatePhoto != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Cannot create book",
+			"error":   errcreatePhoto,
+		})
+	}
+		}
 		
 	}
-	log.Println("filename", filenamestring)
+	
 
-	// newphoto := entity.Photo{
-	// 	Image:      filename.(string),
-	// 	CategoryID: photo.CategotyId,
-	// }
 
-	// errcreatePhoto := database.DB.Create(&newphoto).Error
-	// if errcreatePhoto != nil {
-	// 	return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	// 		"message": "Cannot create book",
-	// 		"error":   errcreatePhoto,
-	// 	})
-	// }
+	
 	return ctx.JSON(fiber.Map{
 		"massage": "successful",
 		
